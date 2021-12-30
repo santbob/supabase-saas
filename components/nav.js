@@ -8,12 +8,17 @@ const Nav = () => {
       <Link href="/">
         <a>Home</a>
       </Link>
+      {user && (<Link href="/dashboard">
+        <a className='ml-2'>Dashboard</a>
+      </Link>)}
       <Link href="/pricing">
         <a className='ml-2'>Pricing</a>
       </Link>
-      <Link href={user ? '/logout' : '/login'}>
-        <a className='ml-auto'>{user ? 'Logout' : 'Login'}</a>
-      </Link>
+      <div className='ml-auto'>
+        <Link href={user ? '/logout' : '/login'}>
+          <a >{user ? 'Logout' : 'Login'}</a>
+        </Link>
+      </div>
     </nav>
   )
 }

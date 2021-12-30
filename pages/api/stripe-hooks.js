@@ -20,24 +20,35 @@ const handler = async (req, res) => {
 
   const supabase = getServiceSupabase();
 
+  const getProductName = async (productId) => {
+    const { name } = await stripe.products.retrieve(event.data.object.plan.product);
+    return name;
+  }
+
   switch (event.type) {
-    case 'customer.subscription.created':
+    case 'customer.subscription.updated':
+      const planName = await getProductName(event.data.object.plan.product);
       await supabase
         .from('profile')
         .update({
           is_subscribed: true,
           interval: event.data.object.items.data[0].plan.interval,
+          subscribed_to_plan: planName,
         })
         .eq('stripe_customer_id', event.data.object.customer);
       break;
-    case 'customer.subscription.updated':
-      console.log('customer.subscription.updated');
-      break;
     case 'customer.subscription.deleted':
-      console.log('customer.subscription.deleted');
+      await supabase
+        .from('profile')
+        .update({
+          is_subscribed: false,
+          interval: null,
+          subscribed_to_plan: null,
+        })
+        .eq('stripe_customer_id', event.data.object.customer);
       break;
   }
-
+  console.log('event data object ', JSON.stringify(event.data.object));
   console.log({ event });
   res.send({ recieved: true });
 }
