@@ -5,10 +5,9 @@ import initStripe from 'stripe'
 
 const handler = async (req, res) => {
   const { user } = await supabase.auth.api.getUserByCookie(req);
-
-
   if (!user) {
     res.status(401).send("Unauthorized");
+    return;
   }
   const token = cookie.parse(req.headers.cookie || '')['sb:token'];
 
